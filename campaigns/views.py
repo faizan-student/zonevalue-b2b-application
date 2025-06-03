@@ -38,23 +38,23 @@ class EmailCampaignView(View, LoginRequiredMixin):
             if email:
                 total_count += 1
                 obj, created = CampaignEmail.objects.get_or_create(email=email)
-                if not obj.is_sent:
-                    try:
-                        send_mail(
-                            subject=subject,
-                            message=content,
-                            from_email=settings.EMAIL_HOST_USER,
-                            recipient_list=[email],
-                            fail_silently=False,
-                        )
-                        obj.content = content
-                        obj.is_sent = True
-                        obj.save()
-                        sent_count += 1
-                    except Exception as e:
-                        failed_count += 1
-                        failed_emails.append(email)
-                        print(f"Failed to send to {email}: {e}")
+                # Ab bina condition ke email send karenge
+                try:
+                    send_mail(
+                        subject=subject,
+                        message=content,
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[email],
+                        fail_silently=False,
+                    )
+                    obj.content = content
+                    obj.is_sent = True
+                    obj.save()
+                    sent_count += 1
+                except Exception as e:
+                    failed_count += 1
+                    failed_emails.append(email)
+                    print(f"Failed to send to {email}: {e}")
 
         return render(
             request,
